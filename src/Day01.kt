@@ -1,21 +1,51 @@
 fun main() {
-    fun part1(input: List<String>): Int {
-        return input.size
+
+    fun partOne() {
+        val testInput = readInput("Day01_test")
+
+        var dial = TheDial()
+        var zerCount = 0
+
+        testInput.forEachIndexed { index, it ->
+            val direction = it.first()
+            val distance = it.drop(1).toInt()
+            dial = when (direction) {
+                'R' -> {
+                    dial.dialRight(clicks = distance)
+                }
+
+                'L' -> {
+                    dial.dialLeft(clicks = distance)
+                }
+
+                else -> throw IllegalArgumentException("Unknown direction $direction")
+            }
+            if (dial.isAtZero) zerCount++
+        }
+        println("zeroCount: $zerCount")
     }
 
-    fun part2(input: List<String>): Int {
-        return input.size
+    fun partTwo() {
+
     }
 
-    // Test if implementation meets criteria from the description, like:
-    check(part1(listOf("test_input")) == 1)
+    partTwo()
+}
 
-    // Or read a large test input from the `src/Day01_test.txt` file:
-    val testInput = readInput("Day01_test")
-    check(part1(testInput) == 1)
+@JvmInline
+value class TheDial(val pointer: Int = 50) {
+    val isAtZero get() = pointer == 0
+    fun dialRight(clicks: Int): TheDial = TheDial((pointer + clicks) % 100)
+    fun dialLeft(clicks: Int): TheDial = TheDial((pointer - clicks) % 100)
+}
 
-    // Read the input from the `src/Day01.txt` file.
-    val input = readInput("Day01")
-    part1(input).println()
-    part2(input).println()
+class TheDialButWithCounter(val pointer: Int = 0) {
+    private var count = 0
+    fun getPassword() = count
+    fun dialRight(clicks: Int): TheDial {
+        val newPointer = pointer + clicks
+        if (newPointer/100 > 0) count++
+        return TheDial(newPointer % 100)
+    }
+    fun dialLeft(clicks: Int): TheDial = TheDial((pointer - clicks) % 100)
 }
